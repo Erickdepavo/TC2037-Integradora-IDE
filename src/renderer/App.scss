@@ -1,0 +1,46 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.centered-content {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.main-dialog {
+  width: 500px;
+  height: auto;
+}
+
+h1 {
+  width: 100%;
+  text-align: center;
+}
+
+/* Theming */
+// @import "~bootstrap/scss/_functions";
+// @import "~bootstrap/scss/_variables";
+
+//$primary: #FF0000;
+//@media (prefers-color-scheme: dark) {
+  //$light: #343a40;
+  //$dark: #f8f9fa;
+
+  //$body-bg: #1C1C1E;
+//}
+
+
+/* import bootstrap to set changes */
+@import "~bootstrap/scss/bootstrap";
+//@import "~bootstrap-icons/font/fonts/bootstrap-icons.woff";
+//@import "~bootstrap-icons/font/fonts/bootstrap-icons.woff2";
+//@import "~bootstrap-icons/font/bootstrap-icons.scss";

@@ -1,4 +1,5 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
+/* eslint-disable import/first */
 
 /**
  * This module executes inside of electron's main process. You can start
@@ -9,11 +10,12 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import child_process from 'child_process';
 
 export default class AppUpdater {
   constructor() {
@@ -135,3 +137,60 @@ app
     });
   })
   .catch(console.log);
+
+
+/**
+ * Custom stuff...
+ */
+import './listeners';
+
+
+// This function will output the lines from the script
+// and will return the full combined output
+// as well as exit code when it's done (using the callback).
+export function run_script(command: string, args: string[], callback: () => void) {
+  var child = child_process.spawn(command, args, {
+    encoding: 'utf8',
+    shell: true
+  });
+  // You can also use a variable to save the output for when the script closes later
+  child.on('error', (error) => {
+    dialog.showMessageBox({
+      title: 'Title',
+      type: 'warning',
+      message: 'Error occured.\r\n' + error,
+    });
+  });
+
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', (data) => {
+    //Here is the output
+    data=data.toString();
+    console.log("Output to send:", data);
+    mainWindow?.webContents.send('mainprocess-response', data);
+  });
+
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', (data) => {
+    // Return some data to the renderer process with the mainprocess-response ID
+    //mainWindow?.webContents.send('mainprocess-response', data);
+    //Here is the output from the command
+    console.log("Error to send:\n", data);
+  });
+
+  child.on('close', (code) => {
+    //Here you can get the exit code of the script
+    switch (code) {
+      case 0:
+        /*dialog.showMessageBox({
+          title: 'Title',
+          type: 'info',
+          message: 'End process.\r\n'
+        });*/
+        console.log("Process ended with code:", code)
+        break;
+    }
+  });
+  if (typeof callback === 'function')
+    callback();
+}

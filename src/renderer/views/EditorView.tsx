@@ -33,7 +33,6 @@ function EditorView() {
   }
 
   useEffect(() => {
-    console.log("extname", extname(currentFile))
     readFile(currentFile)
     .then((text) => {
       console.log("File read:", text)
